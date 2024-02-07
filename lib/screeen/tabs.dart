@@ -8,9 +8,6 @@ import 'package:meals/screeen/filters.dart';
 import 'package:meals/screeen/meals.dart';
 import '../providers/filters_provider.dart';
 
-final Map<FilteredMeal, bool> kFilteredMeal = {
-
-};
 
 class TabsScreen extends ConsumerStatefulWidget {
   const TabsScreen({super.key});
