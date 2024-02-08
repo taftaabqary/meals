@@ -1,80 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/filters_provider.dart';
 
-enum FilteredMeal {
-  glutenFree,
-  lactoseFree,
-  vegetarian,
-  vegan
-}
-
-class FiltersScreen extends StatefulWidget {
-  const FiltersScreen({super.key, required this.currentFilteredSwitch});
-
-  final Map<FilteredMeal, bool> currentFilteredSwitch;
+class FiltersScreen extends ConsumerWidget {
+  const FiltersScreen({super.key});
 
   @override
-  State<FiltersScreen> createState() {
-    return _FiltersScreenState();
-  }
-}
-
-class _FiltersScreenState extends State<FiltersScreen> {
-  var _glutenFreeFilterSet = false;
-  var _lactoseFreeFilterSet = false;
-  var _vegetarianFilterSet = false;
-  var _veganFilterSet = false;
-
-  @override
-  void initState() {
-    _glutenFreeFilterSet = widget.currentFilteredSwitch[FilteredMeal.glutenFree]!;
-    _lactoseFreeFilterSet = widget.currentFilteredSwitch[FilteredMeal.lactoseFree]!;
-    _vegetarianFilterSet = widget.currentFilteredSwitch[FilteredMeal.vegetarian]!;
-    _veganFilterSet = widget.currentFilteredSwitch[FilteredMeal.vegan]!;
-    super.initState();
-  }
-
-
-  @override
-  Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      onPopInvoked: (bool isPop) {
-        if(isPop) {
-          return;
-        } else {
-          Navigator.of(context).pop(
-              {
-                FilteredMeal.glutenFree: _glutenFreeFilterSet,
-                FilteredMeal.lactoseFree: _lactoseFreeFilterSet,
-                FilteredMeal.vegetarian: _vegetarianFilterSet,
-                FilteredMeal.vegan: _veganFilterSet,
-              });
-        }
-      },
-      child: Scaffold(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final switchFilterSet = ref.watch(filtersProvider);
+    return Scaffold(
           appBar: AppBar(
             title: const Text('Your Filters'),
           ),
 
-          // drawer: DrawerScreen(
-          //     onSelectedDrawer: (identifier) {
-          //       Navigator.of(context).pop();
-          //       if(identifier == 'meals') {
-          //         setState(() {
-          //           Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => const TabsScreen()));
-          //         });
-          //       }
-          //     }
-          // ),
-
           body: Column(
             children: [
               SwitchListTile(
-                value: _glutenFreeFilterSet,
+                value: switchFilterSet[FilteredMeal.glutenFree]!,
                 onChanged: (isChecked) {
-                  setState(() {
-                    _glutenFreeFilterSet = isChecked;
-                  });
+                  ref.read(filtersProvider.notifier).setFilter(FilteredMeal.glutenFree, isChecked);
                 },
                 title: Text('Gluten-Free', style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   color: Theme.of(context).colorScheme.onBackground),
@@ -87,12 +31,10 @@ class _FiltersScreenState extends State<FiltersScreen> {
               ),
 
               SwitchListTile(
-                value: _lactoseFreeFilterSet,
-                onChanged: (isChecked) {
-                  setState(() {
-                    _lactoseFreeFilterSet = isChecked;
-                  });
-                },
+                  value: switchFilterSet[FilteredMeal.lactoseFree]!,
+                  onChanged: (isChecked) {
+                    ref.read(filtersProvider.notifier).setFilter(FilteredMeal.lactoseFree, isChecked);
+                  },
                 title: Text('Lactose-Free', style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   color: Theme.of(context).colorScheme.onBackground),
                 ),
@@ -104,30 +46,26 @@ class _FiltersScreenState extends State<FiltersScreen> {
               ),
 
               SwitchListTile(
-                value: _vegetarianFilterSet,
-                onChanged: (isChecked) {
-                  setState(() {
-                    _vegetarianFilterSet = isChecked;
-                  });
-                },
-                title: Text('Vegetarian', style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  value: switchFilterSet[FilteredMeal.vegetarian]!,
+                  onChanged: (isChecked) {
+                    ref.read(filtersProvider.notifier).setFilter(FilteredMeal.vegetarian, isChecked);
+                  },
+                  title: Text('Vegetarian', style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   color: Theme.of(context).colorScheme.onBackground),
-                ),
-                subtitle: Text('Filtered only showing vegetarian meals.', style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  ),
+                  subtitle: Text('Filtered only showing vegetarian meals.', style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     color: Theme.of(context).colorScheme.onBackground),
-                ),
+                  ),
                 activeColor: Theme.of(context).colorScheme.tertiary,
                 contentPadding: const EdgeInsets.only(left: 34, right: 22)
               ),
 
               SwitchListTile(
-                value: _veganFilterSet,
-                onChanged: (isChecked) {
-                  setState(() {
-                    _veganFilterSet = isChecked;
-                  });
-                },
-                title: Text('Vegan', style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  value: switchFilterSet[FilteredMeal.vegan]!,
+                  onChanged: (isChecked) {
+                    ref.read(filtersProvider.notifier).setFilter(FilteredMeal.vegan, isChecked);
+                    },
+                  title: Text('Vegan', style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   color: Theme.of(context).colorScheme.onBackground),
                 ),
                 subtitle: Text('Filtered only showing vegan meals.', style: Theme.of(context).textTheme.labelMedium?.copyWith(
@@ -138,7 +76,6 @@ class _FiltersScreenState extends State<FiltersScreen> {
               ),
             ],
           ),
-      ),
     );
   }
 }
