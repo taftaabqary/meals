@@ -26,7 +26,16 @@ class DetailMealScreen extends ConsumerWidget {
                     SnackBar(content: Text(stateToggle ? 'Success added to a favorites meal' : 'Remove meal from favorites'))
                 );
               },
-              icon: Icon((isFavorite) ? Icons.star : Icons.star_border)
+              icon: AnimatedSwitcher(
+                transitionBuilder: (child, animation) {
+                  return RotationTransition(
+                    turns: Tween(begin: 0.85, end: 1.0).animate(animation),
+                    child: child,
+                  );
+                },
+                duration: const Duration(milliseconds: 300),
+                child: Icon((isFavorite) ? Icons.star : Icons.star_border, key: ValueKey(isFavorite)),
+              )
           )
         ],
       ),
@@ -34,12 +43,15 @@ class DetailMealScreen extends ConsumerWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            FadeInImage(
-                height: 300,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                placeholder: MemoryImage(kTransparentImage),
-                image: NetworkImage(meal.imageUrl)
+            Hero(
+              tag: meal.id,
+              child: FadeInImage(
+                  height: 300,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  placeholder: MemoryImage(kTransparentImage),
+                  image: NetworkImage(meal.imageUrl)
+              ),
             ),
             const SizedBox(height: 14),
             Text(
